@@ -7,17 +7,16 @@ import requests
 from airtable import Airtable
 import tweepy
 
-airtab = Airtable('appr51iMrQJxqnKxe', 'wapo',
+airtab = Airtable(os.environ['police_violence_db'], 'wapo',
                   os.environ['AIRTABLE_API_KEY'])
-
-auth = tweepy.OAuthHandler(
-    os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
+auth = tweepy.OAuthHandler(os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
 auth.set_access_token(
     os.environ['TWITTER_OAUTH_TOKEN'], os.environ['TWITTER_OAUTH_TOKEN_SECRET'])
 tw = tweepy.API(auth)
+v2 = []
 
 
-def wapo_fatal_shootings_by_ms_leos(quiet=True):
+def wapo_fatal_shootings_by_ms_leos():
     """This function does blah blah."""
     ms_list = []
     url = 'https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv'
@@ -26,13 +25,11 @@ def wapo_fatal_shootings_by_ms_leos(quiet=True):
         data = r.content.decode('utf-8')
         csv_reader = csv.reader(data.splitlines(), delimiter=',')
         full_list = list(csv_reader)
-        if not quiet:
-            print("total: " + str(len(full_list)))
+        v2.append(f"total: {len(full_list)}")
         for row in full_list:
             if row[9] == "MS":
                 ms_list.append(row)
-    if not quiet:
-        print("MS: " + str(len(ms_list)))
+    v2.append(f"MS: {len(ms_list)}")
     for row in ms_list:
         this_dict = {}
         this_dict['id'] = row[0]
@@ -57,6 +54,7 @@ def wapo_fatal_shootings_by_ms_leos(quiet=True):
             msg = new['fields']['msg']
             tw.update_status(status=msg)
             tw.send_direct_message(recipient_id='2163941252', text=msg)
+            v2.append(msg)
 
 
 def wapo_fatal_shootings_by_ms_leos_supplement(year):
@@ -92,7 +90,12 @@ def wapo_fatal_shootings_by_ms_leos_supplement(year):
 
 
 def main():
-    wapo_fatal_shootings_by_ms_leos(quiet=False)
+    data = {'value1': 'police_shootings.py'}
+    wapo_fatal_shootings_by_ms_leos()
+    data['value2'] = '\n'.join(v2)
+    data['value3'] = 'success'
+    ifttt_event_url = os.environ['IFTTT_WEBHOOKS_URL'].format('code_completed')
+    requests.post(ifttt_event_url, json=data)
 
 
 if __name__ == "__main__":
