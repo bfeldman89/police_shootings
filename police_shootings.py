@@ -77,11 +77,11 @@ def wapo_fatal_shootings_by_ms_leos_supplement(year):
 
 
 def main():
-    data = {'value1': 'police_shootings.py'}
+    data = {'Value1': 'police_shootings.py'}
     wapo_fatal_shootings_by_ms_leos()
     wapo_fatal_shootings_by_ms_leos_supplement(2019)
-    data['value2'] = '\n'.join(v2)
-    data['value3'] = 'success'
+    data['Value2'] = '\n'.join(v2)
+    data['Value3'] = 'success'
     ifttt_event_url = os.environ['IFTTT_WEBHOOKS_URL'].format('code_completed')
     requests.post(ifttt_event_url, json=data)
 
