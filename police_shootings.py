@@ -24,7 +24,7 @@ tw = tweepy.API(auth)
 def wrap_it_up(function, t0, new, total):
     this_dict = {'module': 'police_shootings.py'}
     this_dict['function'] = function
-    this_dict['duration'] = round((time.time() - t0) / 60, 2)
+    this_dict['duration'] = round(time.time() - t0, 2)
     this_dict['total'] = total
     this_dict['new'] = new
     airtab_log.insert(this_dict, typecast=True)
