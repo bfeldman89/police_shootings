@@ -3,22 +3,36 @@
 import csv
 import json
 import os
+import time
 import requests
 from airtable import Airtable
 import tweepy
 
 airtab = Airtable(os.environ['police_violence_db'], 'wapo',
                   os.environ['AIRTABLE_API_KEY'])
+
+airtab_log = Airtable(os.environ['log_db'],
+                      'log', os.environ['AIRTABLE_API_KEY'])
+
 auth = tweepy.OAuthHandler(
     os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
 auth.set_access_token(
     os.environ['TWITTER_OAUTH_TOKEN'], os.environ['TWITTER_OAUTH_TOKEN_SECRET'])
 tw = tweepy.API(auth)
-v2 = []
+
+
+def wrap_it_up(function, t0, new, total):
+    this_dict = {'module': 'police_shootings.py'}
+    this_dict['function'] = function
+    this_dict['duration'] = round((time.time() - t0) / 60, 2)
+    this_dict['total'] = total
+    this_dict['new'] = new
+    airtab_log.insert(this_dict, typecast=True)
 
 
 def wapo_fatal_shootings_by_ms_leos():
     """This function does blah blah."""
+    t0, i = time.time(), 0
     ms_list = []
     url = 'https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv'
     with requests.Session() as s:
@@ -26,11 +40,9 @@ def wapo_fatal_shootings_by_ms_leos():
         data = r.content.decode('utf-8')
         csv_reader = csv.reader(data.splitlines(), delimiter=',')
         full_list = list(csv_reader)
-        v2.append(f"total: {len(full_list)}")
         for row in full_list:
             if row[9] == "MS":
                 ms_list.append(row)
-    v2.append(f"MS: {len(ms_list)}")
     for row in ms_list:
         this_dict = {}
         this_dict['id'] = row[0]
@@ -55,7 +67,8 @@ def wapo_fatal_shootings_by_ms_leos():
             msg = new['fields']['msg']
             tw.update_status(status=msg)
             tw.send_direct_message(recipient_id='2163941252', text=msg)
-            v2.append(msg)
+            i += i
+    wrap_it_up('wapo_fatal_shootings_by_ms_leos', t0, i, len(ms_list))
 
 
 def wapo_fatal_shootings_by_ms_leos_supplement(year):
@@ -77,13 +90,8 @@ def wapo_fatal_shootings_by_ms_leos_supplement(year):
 
 
 def main():
-    data = {'Value1': 'police_shootings.py'}
     wapo_fatal_shootings_by_ms_leos()
     wapo_fatal_shootings_by_ms_leos_supplement(2019)
-    data['Value2'] = '\n'.join(v2)
-    data['Value3'] = 'success'
-    ifttt_event_url = os.environ['IFTTT_WEBHOOKS_URL'].format('code_completed')
-    requests.post(ifttt_event_url, json=data)
 
 
 if __name__ == "__main__":
