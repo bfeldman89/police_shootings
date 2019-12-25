@@ -8,20 +8,15 @@ import requests
 from airtable import Airtable
 import tweepy
 
-airtab = Airtable(os.environ['police_violence_db'], 'wapo',
-                  os.environ['AIRTABLE_API_KEY'])
+airtab = Airtable(os.environ['police_violence_db'], 'wapo', os.environ['AIRTABLE_API_KEY'])
+airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
 
-airtab_log = Airtable(os.environ['log_db'],
-                      'log', os.environ['AIRTABLE_API_KEY'])
-
-auth = tweepy.OAuthHandler(
-    os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
-auth.set_access_token(
-    os.environ['TWITTER_OAUTH_TOKEN'], os.environ['TWITTER_OAUTH_TOKEN_SECRET'])
+auth = tweepy.OAuthHandler(os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
+auth.set_access_token(os.environ['TWITTER_OAUTH_TOKEN'], os.environ['TWITTER_OAUTH_TOKEN_SECRET'])
 tw = tweepy.API(auth)
 
 
-def wrap_it_up(function, t0, new, total):
+def wrap_it_up(t0, new, total=None, function=None):
     this_dict = {'module': 'police_shootings.py'}
     this_dict['function'] = function
     this_dict['duration'] = round(time.time() - t0, 2)
@@ -68,7 +63,7 @@ def wapo_fatal_shootings_by_ms_leos():
             tw.update_status(status=msg)
             tw.send_direct_message(recipient_id='2163941252', text=msg)
             i += i
-    wrap_it_up('wapo_fatal_shootings_by_ms_leos', t0, i, len(ms_list))
+    wrap_it_up(t0, i, len(ms_list), 'wapo_fatal_shootings_by_ms_leos')
 
 
 def wapo_fatal_shootings_by_ms_leos_supplement(year):
