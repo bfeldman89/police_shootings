@@ -46,11 +46,15 @@ cloudinary.config(cloud_name='bfeldman89',
 muh_headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36'}
 
 
+my_funcs = {'wapo_fatal_shootings_by_ms_leos': 'recnCumWo19foxa3C'}
+
+
 def wrap_from_module(module):
     def wrap_it_up(t0, new=None, total=None, function=None):
         this_dict = {
             'module': module,
             'function': function,
+            '_function': my_funcs[function],
             'duration': round(time.time() - t0, 2),
             'total': total,
             'new': new
