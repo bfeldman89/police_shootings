@@ -2,28 +2,12 @@
 """This module does blah blah."""
 import csv
 import json
-import os
 import time
 import requests
-from airtable import Airtable
-import tweepy
 
-airtab = Airtable(os.environ['police_violence_db'], 'wapo', os.environ['AIRTABLE_API_KEY'])
-airtab_log = Airtable(os.environ['log_db'], 'log', os.environ['AIRTABLE_API_KEY'])
+from common import airtab_homicides_by_cop as airtab, tw, wrap_from_module
 
-auth = tweepy.OAuthHandler(os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
-auth.set_access_token(os.environ['TWITTER_OAUTH_TOKEN'], os.environ['TWITTER_OAUTH_TOKEN_SECRET'])
-tw = tweepy.API(auth)
-
-
-def wrap_it_up(t0, new, total=None, function=None):
-    this_dict = {'module': 'police_shootings.py'}
-    this_dict['function'] = function
-    this_dict['duration'] = round(time.time() - t0, 2)
-    this_dict['total'] = total
-    this_dict['new'] = new
-    airtab_log.insert(this_dict, typecast=True)
-
+wrap_it_up = wrap_from_module('police_shootings.py')
 
 def wapo_fatal_shootings_by_ms_leos():
     """This function does blah blah."""
