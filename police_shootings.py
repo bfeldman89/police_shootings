@@ -4,6 +4,7 @@ import csv
 import json
 import time
 import requests
+import tweepy
 
 from common import airtab_homicides_by_cop as airtab, tw, wrap_from_module
 
@@ -45,7 +46,10 @@ def wapo_fatal_shootings_by_ms_leos():
             new = airtab.insert(this_dict, typecast=True)
             msg = new['fields']['msg']
             tw.update_status(status=msg)
-            tw.send_direct_message(recipient_id='2163941252', text=msg)
+            try:
+                tw.send_direct_message(recipient_id='2163941252', text=msg)
+            except tweepy.error.TweepError as err:
+                print(err)
             i += i
     wrap_it_up(t0, i, len(ms_list), 'wapo_fatal_shootings_by_ms_leos')
 
