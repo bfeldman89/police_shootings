@@ -74,7 +74,7 @@ def wapo_fatal_shootings_by_ms_leos_supplement(year):
 
 def main():
     wapo_fatal_shootings_by_ms_leos()
-    wapo_fatal_shootings_by_ms_leos_supplement(2019)
+    # wapo_fatal_shootings_by_ms_leos_supplement(2019)
 
 
 if __name__ == "__main__":
