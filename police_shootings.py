@@ -1,14 +1,13 @@
 # !/usr/bin/env python3
 """This module does blah blah."""
 import csv
-import json
 import time
 import requests
 import tweepy
 
 from common import airtab_homicides_by_cop as airtab, tw, wrap_from_module
 
-wrap_it_up = wrap_from_module('police_shootings.py')
+wrap_it_up = wrap_from_module(module='police_shootings.py')
 
 def wapo_fatal_shootings_by_ms_leos():
     """This function does blah blah."""
@@ -44,37 +43,18 @@ def wapo_fatal_shootings_by_ms_leos():
             airtab.update(m['id'], this_dict, typecast=True)
         else:
             new = airtab.insert(this_dict, typecast=True)
+            i += i
             msg = new['fields']['msg']
             tw.update_status(status=msg)
             try:
                 tw.send_direct_message(recipient_id='2163941252', text=msg)
             except tweepy.error.TweepError as err:
                 print(err)
-            i += i
-    wrap_it_up(t0, i, len(ms_list), 'wapo_fatal_shootings_by_ms_leos')
-
-
-def wapo_fatal_shootings_by_ms_leos_supplement(year):
-    """This function does blah blah."""
-    url = f'https://s3.amazonaws.com/postgraphics/policeshootings/policeshootings{year}.json'
-    r = requests.get(url)
-    full_list = json.loads(r.text)
-    for x in full_list:
-        if x['state'] == "MS":
-            this_dict = {}
-            record = airtab.match('id', str(x['id']))
-            this_dict['blurb'] = x['blurb']
-            this_dict['lat'] = str(x['lat'])
-            this_dict['lon'] = str(x['lon'])
-            this_dict['sources'] = repr(x['sources'])
-            this_dict['photos'] = repr(x['photos'])
-            this_dict['videos'] = repr(x['videos'])
-            airtab.update(record['id'], this_dict, typecast=True)
+    wrap_it_up(t0, new=i, total=len(ms_list), function='wapo_fatal_shootings_by_ms_leos')
 
 
 def main():
     wapo_fatal_shootings_by_ms_leos()
-    # wapo_fatal_shootings_by_ms_leos_supplement(2019)
 
 
 if __name__ == "__main__":
