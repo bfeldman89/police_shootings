@@ -22,6 +22,7 @@ def wapo_fatal_shootings_by_ms_leos():
         for row in full_list:
             if row[9] == "MS":
                 ms_list.append(row)
+    print(f'total ms fatalities: {len(ms_list)}')
     for row in ms_list:
         this_dict = {}
         this_dict['id'] = row[0]
@@ -50,6 +51,7 @@ def wapo_fatal_shootings_by_ms_leos():
                 tw.send_direct_message(recipient_id='2163941252', text=msg)
             except tweepy.error.TweepError as err:
                 print(err)
+    print(f'total new ms fatalities: {i}')
     wrap_it_up(t0, new=i, total=len(ms_list), function='wapo_fatal_shootings_by_ms_leos')
 
 
