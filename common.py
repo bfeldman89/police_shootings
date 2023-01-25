@@ -9,10 +9,10 @@ import tweepy
 
 airtab_homicides_by_cop = Airtable(os.environ['police_violence_db'], 'wapo', os.environ['AIRTABLE_API_KEY'])
 
-airtab_tweets = Airtable(base_key=os.environ['botfeldman89_db'],
+airtab_tweets = Airtable(os.environ['botfeldman89_db'],
                          table_name='scheduled_tweets',
                          api_key=os.environ['AIRTABLE_API_KEY'])
-airtab_log = Airtable(base_key=os.environ['log_db'],
+airtab_log = Airtable(os.environ['log_db'],
                       table_name='log',
                       api_key=os.environ['AIRTABLE_API_KEY'])
 
