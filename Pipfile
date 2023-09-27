@@ -11,6 +11,7 @@ airtable-python-wrapper = "*"
 cloudinary = "*"
 requests = "*"
 tweepy = "*"
+python-documentcloud = "*"
 
 [requires]
 python_version = "3.8"

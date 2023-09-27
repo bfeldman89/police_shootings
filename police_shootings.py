@@ -60,8 +60,37 @@ def wapo_fatal_shootings_by_ms_leos():
     wrap_it_up(t0, new=i, total=len(ms_list), function='wapo_fatal_shootings_by_ms_leos')
 
 
+def update_agency_names():
+    this_dict = {}
+    agency_names = []
+    records = airtab.get_all(view='need agency name')
+    for record in records:
+        agency_id_list = record['fields']['agency_ids'].split(";")
+        agency_names_as_string = get_agency_names(agency_id_list)
+        this_dict['agency_names'] = agency_names_as_string
+        airtab.update(record['id'], this_dict, typecast=True)
+
+
+def get_agency_names(agency_ids):
+    agency_names = []
+    agency_url = 'https://raw.githubusercontent.com/washingtonpost/data-police-shootings/master/v2/fatal-police-shootings-agencies.csv'
+    for agency_id in agency_ids:
+        with requests.Session() as s:
+            r = s.get(agency_url)
+            data = r.content.decode('utf-8')
+            csv_reader = csv.reader(data.splitlines(), delimiter=',')
+            full_list = list(csv_reader)
+            for row in full_list:
+                if row[0] == agency_id:
+                    agency_names.append(row[1])
+    return ', '.join(agency_names)
+  
+
+
 def main():
     wapo_fatal_shootings_by_ms_leos()
+    time.sleep(2)
+    update_agency_names()
 
 
 if __name__ == "__main__":
