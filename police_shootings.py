@@ -63,7 +63,7 @@ def wapo_fatal_shootings_by_ms_leos():
 def update_agency_names():
     this_dict = {}
     agency_names = []
-    records = airtab.get_all(view='need agency name')
+    records = airtab.all(view='need agency name')
     for record in records:
         agency_id_list = record['fields']['agency_ids'].split(";")
         agency_names_as_string = get_agency_names(agency_id_list)

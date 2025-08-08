@@ -2,19 +2,19 @@
 """This module provides a function for shipping logs to Airtable."""
 import os
 import time
-from airtable import Airtable
+from pyairtable import Api
 import cloudinary
 from documentcloud import DocumentCloud
 import tweepy
 
-airtab_homicides_by_cop = Airtable(os.environ['police_violence_db'], 'wapo', os.environ['AIRTABLE_API_KEY'])
+api = Api(os.environ['AIRTABLE_PAT'])
 
-airtab_tweets = Airtable(os.environ['botfeldman89_db'],
-                         table_name='scheduled_tweets',
-                         api_key=os.environ['AIRTABLE_API_KEY'])
-airtab_log = Airtable(os.environ['log_db'],
-                      table_name='log',
-                      api_key=os.environ['AIRTABLE_API_KEY'])
+airtab_homicides_by_cop = api.table(os.environ['police_violence_db'], 'wapo')
+
+airtab_tweets = api.table(os.environ['botfeldman89_db'],
+                         'scheduled_tweets')
+airtab_log = api.table(os.environ['log_db'],
+                      'log')
 
 auth = tweepy.OAuthHandler(os.environ['TWITTER_APP_KEY'], os.environ['TWITTER_APP_SECRET'])
 auth.set_access_token(os.environ['TWITTER_OAUTH_TOKEN'], os.environ['TWITTER_OAUTH_TOKEN_SECRET'])
